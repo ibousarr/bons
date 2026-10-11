@@ -1,0 +1,6 @@
+{
+  "name": "FastAPI - Gestion Bons de Commande & Envoi Mail LWS",
+  "description": "API Backend FastAPI pour la gestion des bons de commande avec authentification JWT et envoi d'emails via SMTP LWS.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

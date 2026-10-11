@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bon de Commande {{ order.order_number }}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 24px;
+            color: #1f2937;
+        }
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: #ffffff;
+            padding: 32px 28px;
+        }
+        .header h1 {
+            margin: 0 0 8px 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        .content {
+            padding: 28px;
+        }
+        .meta-grid {
+            display: table;
+            width: 100%;
+            margin-bottom: 24px;
+        }
+        .meta-col {
+            display: table-cell;
+            width: 50%;
+            vertical-align: top;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .badge {
+            display: inline-block;
+            background-color: #dbeafe;
+            color: #1e40af;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .custom-message {
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 14px 16px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #1e3a8a;
+            border-radius: 0 6px 6px 0;
+        }
+        table.items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+        table.items-table th {
+            background-color: #f8fafc;
+            color: #475569;
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 2px solid #e2e8f0;
+            font-weight: 600;
+        }
+        table.items-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .totals-box {
+            margin-left: auto;
+            width: 280px;
+            margin-bottom: 24px;
+        }
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 14px;
+        }
+        .totals-row.grand-total {
+            border-top: 2px solid #1e3a8a;
+            margin-top: 6px;
+            padding-top: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            color: #1e3a8a;
+        }
+        .instructions {
+            background-color: #f8fafc;
+            border-radius: 6px;
+            padding: 16px;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+        .footer {
+            background-color: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            padding: 20px 28px;
+            text-align: center;
+            font-size: 12px;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête -->
+        <div class="header">
+            <h1>Bon de Commande : {{ order.order_number }}</h1>
+            <p>Émis par {{ company.COMPANY_NAME }} le {{ order.order_date.strftime('%d/%m/%Y') }}</p>
+        </div>
+
+        <div class="content">
+            {% if custom_message %}
+            <div class="custom-message">
+                <strong>Note de l'acheteur :</strong><br>
+                {{ custom_message }}
+            </div>
+            {% endif %}
+
+            <!-- Détails émetteur / fournisseur -->
+            <div class="meta-grid">
+                <div class="meta-col">
+                    <strong style="color: #64748b; text-transform: uppercase; font-size: 11px;">Destinataire (Fournisseur) :</strong><br>
+                    <strong>{{ supplier.name }}</strong><br>
+                    {% if supplier.contact_name %}À l'att. de : {{ supplier.contact_name }}<br>{% endif %}
+                    Email : {{ supplier.email }}<br>
+                    {% if supplier.phone %}Tél : {{ supplier.phone }}<br>{% endif %}
+                    {% if supplier.address %}{{ supplier.address }}<br>{% endif %}
+                </div>
+                <div class="meta-col text-right">
+                    <strong style="color: #64748b; text-transform: uppercase; font-size: 11px;">Conditions :</strong><br>
+                    Règlement : <strong>{{ order.payment_terms or '30 jours' }}</strong><br>
+                    Livraison souhaitée : <strong>{{ order.expected_delivery_date.strftime('%d/%m/%Y') if order.expected_delivery_date else 'Dès que possible' }}</strong><br>
+                    Statut : <span class="badge">{{ order.status }}</span>
+                </div>
+            </div>
+
+            <!-- Tableau des articles -->
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Réf</th>
+                        <th>Désignation</th>
+                        <th class="text-right">Qté</th>
+                        <th class="text-right">Prix Unitaire HT</th>
+                        <th class="text-right">TVA</th>
+                        <th class="text-right">Total HT</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items %}
+                    <tr>
+                        <td style="color: #64748b; font-family: monospace;">{{ item.reference or '-' }}</td>
+                        <td><strong>{{ item.description }}</strong></td>
+                        <td class="text-right">{{ item.quantity }}</td>
+                        <td class="text-right">{{ "%.2f"|format(item.unit_price_ht) }} €</td>
+                        <td class="text-right">{{ item.tva_rate }}%</td>
+                        <td class="text-right" style="font-weight: 600;">{{ "%.2f"|format(item.total_ht) }} €</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Totaux -->
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td style="width: 50%; vertical-align: top;">
+                        {% if order.delivery_address %}
+                        <div class="instructions">
+                            <strong>Adresse de livraison :</strong><br>
+                            {{ order.delivery_address }}
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td style="width: 50%; vertical-align: top;">
+                        <table style="width: 100%; font-size: 14px;">
+                            <tr>
+                                <td style="padding: 4px 0; color: #64748b;">Total Brut HT :</td>
+                                <td style="padding: 4px 0; text-align: right; font-weight: 600;">{{ "%.2f"|format(order.total_ht) }} €</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 4px 0; color: #64748b;">Total TVA :</td>
+                                <td style="padding: 4px 0; text-align: right; font-weight: 600;">{{ "%.2f"|format(order.total_tva) }} €</td>
+                            </tr>
+                            <tr style="border-top: 2px solid #1e3a8a;">
+                                <td style="padding: 8px 0; font-size: 16px; font-weight: 700; color: #1e3a8a;">Total Net TTC :</td>
+                                <td style="padding: 8px 0; text-align: right; font-size: 16px; font-weight: 700; color: #1e3a8a;">{{ "%.2f"|format(order.total_ttc) }} €</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+            {% if order.notes %}
+            <div class="instructions" style="margin-top: 20px;">
+                <strong>Remarques complémentaires :</strong><br>
+                {{ order.notes }}
+            </div>
+            {% endif %}
+
+            <p style="font-size: 13px; color: #475569; margin-top: 24px;">
+                Merci de nous accuser bonne réception de cette commande et de nous confirmer les délais d'expédition.
+            </p>
+        </div>
+
+        <!-- Pied de page -->
+        <div class="footer">
+            <strong>{{ company.COMPANY_NAME }}</strong> - SIRET : {{ company.COMPANY_SIRET }}<br>
+            {{ company.COMPANY_ADDRESS }} • Tél : {{ company.COMPANY_PHONE }} • Email : {{ company.COMPANY_EMAIL }}<br>
+            <span style="font-size: 11px; opacity: 0.7;">Email transactionnel expédié via passerelle SMTP LWS sécurisée.</span>
+        </div>
+    </div>
+</body>
+</html>
