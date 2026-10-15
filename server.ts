@@ -91,7 +91,7 @@ interface EmailLog {
 const users: User[] = [
   {
     id: 1,
-    email: 'admin@entreprise.com',
+    email: 'admin@ibousarr.site',
     fullName: 'Jean Dupont (Directeur des Achats)',
     role: 'admin',
     isActive: true,
@@ -99,7 +99,7 @@ const users: User[] = [
   },
   {
     id: 2,
-    email: 'acheteur@entreprise.com',
+    email: 'sarrsindian@gmail.com',
     fullName: 'Marie Curie (Chargée de commandes)',
     role: 'acheteur',
     isActive: true,

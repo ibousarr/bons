@@ -7,10 +7,10 @@ services:
       - "8000:8000"
     environment:
       - APP_ENV=production
-      - LWS_SMTP_HOST=mail.lws.fr
+      - LWS_SMTP_HOST=mail.ibousarr.site
       - LWS_SMTP_PORT=465
       - LWS_SMTP_USE_SSL=true
-      - LWS_SMTP_USER=contact@votredomaine.com
-      - LWS_SMTP_PASSWORD=VotreMotDePasseEmailLWS
+      - LWS_SMTP_USER=contact@ibousarr.site
+      - LWS_SMTP_PASSWORD=Ibou-Sarr1
     volumes:
       - ./data:/app/data
