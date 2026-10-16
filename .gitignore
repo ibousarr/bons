@@ -6,3 +6,6 @@ coverage/
 *.log
 .env*
 !.env.example
+fastapi_project/__pycache__/*
+fastapi_project/migrations/__pycache__/*
+fastapi_project/.env*
